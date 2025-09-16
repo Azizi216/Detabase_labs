@@ -1,0 +1,157 @@
+<html>
+<head>
+<title>01_create_deatbase.sql</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #2aacb8;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+01_create_deatbase.sql</font>
+</center></td></tr></table>
+<pre><span class="s0">CREATE DATABASE  </span><span class="s1">hospital_db</span>
+
+    <span class="s0">WITH</span>
+    <span class="s0">OWNER </span><span class="s1">= postgres</span>
+    <span class="s0">ENCODING </span><span class="s1">= </span><span class="s0">UTF8</span>
+    <span class="s0">CONNECTION LIMIT </span><span class="s1">= -</span><span class="s2">1</span><span class="s3">;</span>
+    <span class="s0">COMMENT ON DATABASE </span><span class="s1">hospital_db </span><span class="s0">IS  </span><span class="s4">'Main database for hospital management system'</span><span class="s3">;</span>
+
+
+    <span class="s0">CREATE TABLE </span><span class="s1">department</span><span class="s3">(</span>
+        <span class="s1">dept_code   </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">10</span><span class="s3">) </span><span class="s0">PRIMARY KEY </span><span class="s3">,</span>
+        <span class="s1">dept_name   </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">100</span><span class="s3">) </span><span class="s0">NOT NULL</span><span class="s3">,</span>
+        <span class="s0">location    VARCHAR</span><span class="s3">(</span><span class="s2">100</span><span class="s3">),</span>
+        <span class="s1">created_at  </span><span class="s0">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+
+    <span class="s3">);</span>
+
+    <span class="s0">CREATE TABLE </span><span class="s1">Patient </span><span class="s3">(</span>
+        <span class="s1">patient_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+        <span class="s0">name VARCHAR</span><span class="s3">(</span><span class="s2">100</span><span class="s3">) </span><span class="s0">NOT NULL</span><span class="s3">,</span>
+        <span class="s1">birthdate </span><span class="s0">DATE</span><span class="s3">,</span>
+        <span class="s1">street </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">100</span><span class="s3">),</span>
+        <span class="s1">city </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">50</span><span class="s3">),</span>
+        <span class="s1">state </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">50</span><span class="s3">),</span>
+        <span class="s1">zip </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">10</span><span class="s3">),</span>
+        <span class="s1">insurance_info </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">200</span><span class="s3">)</span>
+    <span class="s3">);</span>
+
+    <span class="s5">--Patient Phones (multivalued attribute)</span>
+
+    <span class="s0">CREATE TABLE  </span><span class="s1">PatientPhone </span><span class="s3">(</span>
+        <span class="s1">phone_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+        <span class="s1">patient_id </span><span class="s0">INT REFERENCES </span><span class="s1">Patient </span><span class="s3">(</span><span class="s1">patient_id</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span><span class="s3">,</span>
+        <span class="s1">phone_number </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">20</span><span class="s3">) </span><span class="s0">NOT NULL</span>
+    <span class="s3">);</span>
+
+    <span class="s5">--DOCTOR TABLE</span>
+    <span class="s0">CREATE TABLE </span><span class="s1">Doctor</span><span class="s3">(</span>
+        <span class="s1">doctor_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+        <span class="s0">name VARCHAR</span><span class="s3">(</span><span class="s2">100</span><span class="s3">) </span><span class="s0">NOT NULL</span>
+    <span class="s3">);</span>
+
+    <span class="s5">--DOCTOR SPECIALIZATIONS (MULTI-VALUED ATTRIBUTE)</span>
+    <span class="s0">CREATE TABLE  </span><span class="s1">DoctorSpecialization </span><span class="s3">(</span>
+        <span class="s1">spec_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+        <span class="s1">doctor_id </span><span class="s0">INT REFERENCES </span><span class="s1">Doctor</span><span class="s3">(</span><span class="s1">doctor_id</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span><span class="s3">,</span>
+        <span class="s1">specialization </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">100</span><span class="s3">) </span><span class="s0">NOT NULL</span>
+    <span class="s3">);</span>
+
+
+    <span class="s5">--Doctor phone</span>
+      <span class="s0">CREATE TABLE </span><span class="s1">DoctorPhone </span><span class="s3">(</span>
+          <span class="s1">phone_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+          <span class="s1">doctor_id </span><span class="s0">INT REFERENCES </span><span class="s1">Doctor</span><span class="s3">(</span><span class="s1">doctor_id</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span><span class="s3">,</span>
+          <span class="s1">phone_Number </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">20</span><span class="s3">) </span><span class="s0">NOT NULL</span>
+      <span class="s3">);</span>
+
+      <span class="s5">--HOSPITAL ROOM (WEAK ENTITY, DEPENDS ON DEPARTMENT)</span>
+      <span class="s0">CREATE TABLE </span><span class="s1">HospitalRoom </span><span class="s3">(</span>
+          <span class="s1">room_id  </span><span class="s0">INT</span><span class="s3">,</span>
+          <span class="s1">dept_code </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">10</span><span class="s3">),</span>
+          <span class="s0">PRIMARY KEY </span><span class="s3">(</span><span class="s1">room_id</span><span class="s3">, </span><span class="s1">dept_code</span><span class="s3">),</span>
+          <span class="s0">FOREIGN KEY  </span><span class="s3">(</span><span class="s1">dept_code</span><span class="s3">) </span><span class="s0">REFERENCES </span><span class="s1">department</span><span class="s3">(</span><span class="s1">dept_code</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span>
+
+      <span class="s3">);</span>
+
+      <span class="s5">--Appointment(relationship between patient &amp; Doctor)</span>
+
+      <span class="s0">CREATE TABLE </span><span class="s1">Appointment </span><span class="s3">(</span>
+          <span class="s1">appointment_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+          <span class="s1">patient_id </span><span class="s0">INT REFERENCES  </span><span class="s1">Patient</span><span class="s3">(</span><span class="s1">patient_id</span><span class="s3">) </span><span class="s0">ON DELETE  CASCADE</span><span class="s3">,</span>
+          <span class="s1">doctor_id </span><span class="s0">INT REFERENCES </span><span class="s1">Doctor</span><span class="s3">(</span><span class="s1">doctor_id</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span><span class="s3">,</span>
+          <span class="s1">date_time </span><span class="s0">TIMESTAMP NOT NULL</span><span class="s3">,</span>
+          <span class="s1">purpose </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">200</span><span class="s3">),</span>
+          <span class="s1">notes </span><span class="s0">TEXT</span>
+      <span class="s3">);</span>
+
+      <span class="s5">--Prescription (relationship between Patient &amp; Doctor)</span>
+      <span class="s0">CREATE TABLE </span><span class="s1">Prescription </span><span class="s3">(</span>
+          <span class="s1">prescription_id </span><span class="s0">SERIAL PRIMARY KEY</span><span class="s3">,</span>
+          <span class="s1">patient_id </span><span class="s0">INT REFERENCES </span><span class="s1">Patient</span><span class="s3">(</span><span class="s1">patient_id</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span><span class="s3">,</span>
+          <span class="s1">doctor_id </span><span class="s0">INT REFERENCES  </span><span class="s1">Doctor</span><span class="s3">(</span><span class="s1">doctor_id</span><span class="s3">) </span><span class="s0">ON DELETE CASCADE</span><span class="s3">,</span>
+          <span class="s1">dosage </span><span class="s0">VARCHAR</span><span class="s3">(</span><span class="s2">50</span><span class="s3">),</span>
+          <span class="s1">instruction </span><span class="s0">TEXT</span>
+      <span class="s3">);</span>
+
+      <span class="s5">--INSERT DEPARTMENTS</span>
+      <span class="s0">INSERT INTO </span><span class="s1">department</span><span class="s3">(</span><span class="s1">dept_code</span><span class="s3">, </span><span class="s1">dept_name</span><span class="s3">, </span><span class="s0">location </span><span class="s3">) </span><span class="s0">VALUES</span>
+      <span class="s3">(</span><span class="s4">'CARD'</span><span class="s3">, </span><span class="s4">'cardiology'</span><span class="s3">, </span><span class="s4">'Building A - Floor 2'</span><span class="s3">);</span>
+
+       <span class="s5">--INSERT PATIENTS</span>
+       <span class="s0">INSERT  INTO </span><span class="s1">Patient</span><span class="s3">(</span><span class="s0">name</span><span class="s3">, </span><span class="s1">birthdate</span><span class="s3">, </span><span class="s1">street</span><span class="s3">, </span><span class="s1">city</span><span class="s3">, </span><span class="s1">state</span><span class="s3">, </span><span class="s1">zip</span><span class="s3">, </span><span class="s1">insurance_info</span><span class="s3">) </span><span class="s0">VALUES</span>
+       <span class="s3">(</span><span class="s4">'Aziz'</span><span class="s3">, </span><span class="s4">'2004-11-16'</span><span class="s3">, </span><span class="s4">'Tolibi_Street'</span><span class="s3">, </span><span class="s4">'Almaty'</span><span class="s3">, </span><span class="s4">'NY'</span><span class="s3">, </span><span class="s4">'004'</span><span class="s3">, </span><span class="s4">'None'</span><span class="s3">);</span>
+
+       <span class="s5">--Insert Patient Phones</span>
+       <span class="s0">INSERT  INTO </span><span class="s1">PatientPhone </span><span class="s3">(</span><span class="s1">patient_id</span><span class="s3">, </span><span class="s1">phone_number</span><span class="s3">) </span><span class="s0">VALUES</span>
+       <span class="s3">(</span><span class="s2">1</span><span class="s3">, </span><span class="s4">'555-111-222'</span><span class="s3">);</span>
+
+        <span class="s5">--INSERT DOCTORS</span>
+        <span class="s0">INSERT  INTO </span><span class="s1">Doctor </span><span class="s3">(</span><span class="s0">name</span><span class="s3">) </span><span class="s0">VALUES</span>
+        <span class="s3">(</span><span class="s4">'DR. Hashmatullah Azizi'</span><span class="s3">);</span>
+
+        <span class="s5">--insert Doctor Phones</span>
+        <span class="s0">INSERT INTO </span><span class="s1">DoctorPhone</span><span class="s3">(</span><span class="s1">doctor_id</span><span class="s3">, </span><span class="s1">phone_Number</span><span class="s3">) </span><span class="s0">VALUES</span>
+        <span class="s3">(</span><span class="s2">1</span><span class="s3">, </span><span class="s4">'555-101-2020'</span><span class="s3">);</span>
+
+        <span class="s5">--INSERT DOCTOR SPECIALIZATIONS</span>
+        <span class="s0">INSERT  INTO </span><span class="s1">DoctorSpecialization </span><span class="s3">(</span><span class="s1">doctor_id</span><span class="s3">, </span><span class="s1">specialization</span><span class="s3">) </span><span class="s0">VALUES</span>
+        <span class="s3">(</span><span class="s2">1</span><span class="s3">, </span><span class="s4">'cardiology'</span><span class="s3">);</span>
+
+        <span class="s5">--Insert Hospital Rooms</span>
+        <span class="s0">INSERT INTO </span><span class="s1">HospitalRoom </span><span class="s3">(</span><span class="s1">room_id</span><span class="s3">, </span><span class="s1">dept_code</span><span class="s3">) </span><span class="s0">VALUES</span>
+        <span class="s3">(</span><span class="s2">101</span><span class="s3">, </span><span class="s4">'CARD'</span><span class="s3">);</span>
+
+        <span class="s5">--INSERT APPOINTMENTS</span>
+        <span class="s0">INSERT  INTO </span><span class="s1">Appointment </span><span class="s3">(</span><span class="s1">patient_id</span><span class="s3">, </span><span class="s1">doctor_id</span><span class="s3">, </span><span class="s1">date_time</span><span class="s3">, </span><span class="s1">purpose</span><span class="s3">, </span><span class="s1">notes</span><span class="s3">) </span><span class="s0">VALUES</span>
+        <span class="s3">(</span><span class="s2">1</span><span class="s3">, </span><span class="s2">1</span><span class="s3">, </span><span class="s4">'2025-6-12 09:00:00'</span><span class="s3">, </span><span class="s4">'Routine Checkup'</span><span class="s3">,</span><span class="s4">'Patient reports mild checkup' </span><span class="s3">);</span>
+
+        <span class="s5">--INSERT PRESCRIPTIONS</span>
+        <span class="s0">INSERT INTO </span><span class="s1">Prescription </span><span class="s3">(</span><span class="s1">patient_id</span><span class="s3">, </span><span class="s1">doctor_id</span><span class="s3">, </span><span class="s1">dosage</span><span class="s3">, </span><span class="s1">instruction</span><span class="s3">) </span><span class="s0">VALUES</span>
+        <span class="s3">(</span><span class="s2">1</span><span class="s3">,</span><span class="s2">1</span><span class="s3">, </span><span class="s4">'100mg'</span><span class="s3">, </span><span class="s4">'Daily after meals'</span><span class="s3">);</span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>
